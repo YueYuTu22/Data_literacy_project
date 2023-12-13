@@ -37,23 +37,4 @@ y_pred = dt_classifier.predict(X_test)
 # Calculating the accuracy of the classifier
 accuracy = accuracy_score(y_test, y_pred)
 
-# Encoding the target variable 'Type' as it is categorical
-le = LabelEncoder()
-y_encoded = le.fit_transform(y)
-
-# Splitting the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
-
-# Creating the Decision Tree classifier
-dt_classifier = DecisionTreeClassifier(random_state=42)
-
-# Fitting the classifier to the training data
-dt_classifier.fit(X_train, y_train)
-
-# Predicting on the test data
-y_pred = dt_classifier.predict(X_test)
-
-# Calculating the accuracy of the classifier
-accuracy = accuracy_score(y_test, y_pred)
-
 print(f'Accuracy: {accuracy}')
