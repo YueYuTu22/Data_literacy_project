@@ -6,35 +6,42 @@ Created on Wed Dec 13 10:53:11 2023
 """
 
 import pandas as pd
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-from sklearn.preprocessing import LabelEncoder
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
 
-file_path = r'archive\cleaned_dataset2023.csv'
+#loading the data
+df = pd.read_csv('archive/cleaned_dataset2023.csv')
 
-df = pd.read_csv(file_path)
+type_counts = df['Type'].value_counts()
+Special_count = type_counts.get('Special', 0)
+TV_count = type_counts.get('TV', 0)
+Movie_count = type_counts.get('Movie', 0)
+ONA_count = type_counts.get('ONA', 0)
+ONA_count = type_counts.get('OVA', 0)
 
-X = df[['Score', 'Rank', 'Popularity', 'Favorites', 'Scored By', 'Members']]
+#target column
+X = df[['Rank', 'Popularity', 'Favorites', 'Weighted_Score', 'Members']] 
 y = df['Type']
 
-# Encoding the target variable 'Type' as it is categorical
-le = LabelEncoder()
-y_encoded = le.fit_transform(y)
+#divide dataset
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Splitting the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
+#build logistic regression model
+model = LogisticRegression(
+    multi_class='multinomial', 
+    solver='newton-cg', 
+    C=0.01,  #Regularization
+    max_iter=500,  #Max iteration
+    tol=0.0001   #Tolerance
+)
 
-# Creating the Decision Tree classifier
-dt_classifier = DecisionTreeClassifier(random_state=42)
+#train the model
+model.fit(X_train, y_train)
 
-# Fitting the classifier to the training data
-dt_classifier.fit(X_train, y_train)
+#prediction
+predictions = model.predict(X_test)
+#waring! The line search algorithm did not converge
 
-# Predicting on the test data
-y_pred = dt_classifier.predict(X_test)
+result = classification_report(y_test, predictions)
 
-# Calculating the accuracy of the classifier
-accuracy = accuracy_score(y_test, y_pred)
-
-print(f'Accuracy: {accuracy}')
