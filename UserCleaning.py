@@ -84,3 +84,5 @@ print(user_df['Location'].head(20))
 
 column_names = user_df.columns
 print(column_names)
+
+output = r'archive\cleaned_userdata.csv'
