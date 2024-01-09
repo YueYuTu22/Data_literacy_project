@@ -29,6 +29,12 @@ user_df = user_df.drop(column_name2, axis=1)
 column_name3 = 'Joined'
 user_df = user_df.drop(column_name3, axis=1)
 
+column_name4 = 'Mean Score'
+user_df = user_df.drop(column_name4, axis=1)
+
+column_name5 = 'Dropped'
+user_df = user_df.drop(column_name5, axis=1)
+
 location = 'Location'
 user_df = user_df[user_df[location].map(lambda x: x.isascii())]
 user_df[location] = user_df[location].str.replace(r'\W', '')
