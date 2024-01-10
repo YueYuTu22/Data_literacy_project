@@ -16,3 +16,10 @@ for studios to suggest the features that are best for the desired rank/popularit
 ### Verification of results
 
 For the top 20 most popular animes, we plan to extract the corresponding studios and check their trends to check whether these studios take user trends into account while planning releases.
+
+## Notes from meeting
+
+### 10/01/2024
+
+* Bayesian approach with an uniformative prior: Conditional probability model with a something like a beta binomial prior
+* Filter the data to get the conditional densities
