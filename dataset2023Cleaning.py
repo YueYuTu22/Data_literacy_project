@@ -30,6 +30,13 @@ df[numerical_columns] = df[numerical_columns].replace('UNKNOWN', pd.NA)
 # Drop rows with NaN values
 df = df.dropna()
 
+# Handle 'UNKNOWN' values in non-numerical columns
+non_numerical_columns = df.select_dtypes(exclude=[np.number]).columns
+df[non_numerical_columns] = df[non_numerical_columns].replace('UNKNOWN', np.nan)
+
+# Drop rows with NaN values
+df = df.dropna()
+
 # Convert 'Rank', 'Score', and 'Scored By' columns to numeric, handling errors by coercing to NaN
 df['Rank'] = pd.to_numeric(df['Rank'], errors='coerce')
 df['Score'] = pd.to_numeric(df['Score'], errors='coerce')
@@ -44,8 +51,22 @@ df['Weighted_Score'] = np.interp(df['Weighted_Score'], (df['Weighted_Score'].min
 # Reset index
 df = df.reset_index(drop=True)
 
+# Function to extract the season and year from the premiered string
+def extract_season_year(premiered):
+    if premiered == 'UNKNOWN':
+        return None, None
+    else:
+        season, year = premiered.split()
+        return season, int(year)
+
+# Apply the function to extract the season and year from the "Premiered" column
+season_year = df['Premiered'].map(extract_season_year)
+df['Premiered Season'] = season_year.apply(lambda x: x[0])
+df['Premiered Year'] = season_year.apply(lambda x: x[1])
+
+# Drop the original 'Premiered' column
+df.drop('Premiered', axis=1, inplace=True)
+
 # Save the cleaned dataset to a new CSV file
 output_path = r'cleaned_dataset2023.csv'
 df.to_csv(output_path, index=False)
-
-output = r'cleaned_dataset2023.csv' # This is a path in the current writable directory
