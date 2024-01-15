@@ -9,11 +9,10 @@ Created on Mon Jan 15 14:01:52 2024
 import pandas as pd
 import pycountry
 
-# 读取CSV文件
+# load csv file
 csv_file = '/Users/ruitongliu/Desktop/Data_literacy_project/DataLiteracy/archive/cleaned_userdata.csv'  # 替换为您的CSV文件路径
 df = pd.read_csv(csv_file)
 
-# 定义将国家名称转换为ISO3代码的函数
 def country_to_iso3(country_name):
     try:
         country = pycountry.countries.search_fuzzy(country_name)
@@ -24,10 +23,10 @@ def country_to_iso3(country_name):
     except LookupError:
         return "Invalid country name"
 
-# 将Country列中的国家名称转换为ISO3代码并添加到新列
+# add the new ISO3_Code into the new line
 df['ISO3_Code'] = df['Country'].apply(country_to_iso3)
 
-# 将结果保存到新的CSV文件
+# save the file
 output_csv_file = '/Users/ruitongliu/Desktop/Data_literacy_project/DataLiteracy/archive/iso3_output1.csv'  # 替换为输出的CSV文件路径
 df.to_csv(output_csv_file, index=False)
 
