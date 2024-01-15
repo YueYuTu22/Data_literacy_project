@@ -4,7 +4,6 @@ Created on Wed Nov 22 13:31:25 2023
 
 @author: yuyue
 """
-from geograpy import places
 import pandas as pd
 import re
 import json
@@ -17,8 +16,6 @@ file_path = r'archive\users-details-2023.csv'
 user_df = pd.read_csv(file_path, encoding='ISO-8859-1')
 
 user_df = user_df.dropna()
-
-user_df = user_df.iloc[:4000]
 
 column_name = 'Username'
 user_df = user_df.drop(column_name, axis=1)
@@ -92,3 +89,5 @@ column_names = user_df.columns
 print(column_names)
 
 output = r'archive\cleaned_userdata.csv'
+
+user_df.to_csv(output, index=False)
