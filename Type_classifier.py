@@ -1,63 +1,46 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Jan 13 13:54:29 2024
+Created on Sat Jan 13 15:10:48 2024
 
-@author: madha
+@author: yuyue
 """
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from xgboost import XGBClassifier
-from sklearn.preprocessing import LabelEncoder
-from imblearn.over_sampling import SMOTE
+from sklearn.preprocessing import MultiLabelBinarizer
 
-# Loading the data
-df = pd.read_csv('cleaned_dataset2023_unknown.csv')
+# Assuming 'df' is your DataFrame
+#loading the data
+df = pd.read_csv(r"C:\Semester3YYYY\DataLiteracy\archive\cleaned_dataset2023.csv")
 
-value_to_drop = 'UNKNOWN'
-df = df[df['Type'] != value_to_drop]
-
-# Target column
+# The features you will use to predict genres
 X = df[['Rank', 'Popularity', 'Favorites', 'Weighted_Score', 'Members']]
-y = df['Type']
 
-# Use LabelEncoder to convert string labels to numeric format
-label_encoder = LabelEncoder()
-y_encoded = label_encoder.fit_transform(y)
+# Preprocessing the 'Genres' column
+# Assuming the 'Genres' column contains strings of genres separated by commas
+genres_list = df['Genres'].apply(lambda x: x.split(', '))
 
-# Handle class imbalance using SMOTE
-smote = SMOTE(random_state=42)
-X_resampled, y_resampled = smote.fit_resample(X, y_encoded)
+# Initialize the MultiLabelBinarizer
+mlb = MultiLabelBinarizer()
 
-# Divide dataset
-X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.2, random_state=42)
+# Fit and transform the genres_list to a binary matrix
+y = mlb.fit_transform(genres_list)
 
-# Fixed hyperparameters
-params = {
-    'learning_rate': 0.2,
-    'n_estimators': 400,
-    'max_depth': 6,
-    'min_child_weight': 3,
-    'subsample': 0.9,
-    'colsample_bytree': 0.9,
-    'gamma': 0.1,
-    'reg_alpha': 0.3,
-    'reg_lambda': 0.3,
-}
+# Now, 'y' is a binary matrix with a column for each genre indicating the presence or absence of the genre
 
-# Build XGBoost model
-xgb_model = XGBClassifier(**params, random_state=42)
-xgb_model.fit(X_train, y_train)
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.multiclass import OneVsRestClassifier
 
-# Prediction
-predictions = xgb_model.predict(X_test)
+# Split the dataset
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Decode the predictions back to original labels
-predicted_labels = label_encoder.inverse_transform(predictions)
+# Initialize the OneVsRestClassifier with a LogisticRegression classifier
+model = OneVsRestClassifier(LogisticRegression())
 
-# Display the predicted labels
-print(predicted_labels)
+# Train the model
+model.fit(X_train, y_train)
 
-# Find the most occurring prediction
-most_occuring_prediction = pd.Series(predicted_labels).mode()[0]
-print(f"Most Popular Type: {most_occuring_prediction}")
+# Make predictions
+predictions = model.predict(X_test)
+
+predicted_genres = mlb.inverse_transform(predictions)
