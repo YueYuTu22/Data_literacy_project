@@ -7,6 +7,10 @@ Created on Wed Nov 22 13:31:25 2023
 import pandas as pd
 import re
 import json
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 #from statsmodels.multivariate.manova import MANOVA
 
 # Replace 'your_file.csv' with the path to your CSV file
@@ -105,6 +109,27 @@ print(column_names)
 
 #maov = MANOVA.from_formula('Days_Watched + Completed + Total_Entries + Episodes_Watched ~ Group', data=user_df)
 #print(maov.mv_test())
+
+X = user_df[['Days Watched', 'Completed', 'Total Entries','Episodes Watched']]
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+pca = PCA()
+pca.fit(X_scaled)
+
+explained_variance = pca.explained_variance_ratio_
+
+loadings = pca.components_
+
+(explained_variance, loadings)
+
+print(loadings)
+
+weights = loadings[0]
+
+features = user_df[['Days Watched', 'Completed', 'Total Entries', 'Episodes Watched']]
+
+user_df['Weighted_Y'] = (features * weights).sum(axis=1)
 
 output = r'archive\cleaned_userdata.csv'
 
