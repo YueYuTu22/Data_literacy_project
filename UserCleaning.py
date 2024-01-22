@@ -7,6 +7,7 @@ Created on Wed Nov 22 13:31:25 2023
 import pandas as pd
 import re
 import json
+#from statsmodels.multivariate.manova import MANOVA
 
 # Replace 'your_file.csv' with the path to your CSV file
 file_path = r'archive\users-details-2023.csv'
@@ -16,6 +17,8 @@ file_path = r'archive\users-details-2023.csv'
 user_df = pd.read_csv(file_path, encoding='ISO-8859-1')
 
 user_df = user_df.dropna()
+
+user_df = user_df.iloc[:9000]
 
 column_name = 'Username'
 user_df = user_df.drop(column_name, axis=1)
@@ -31,6 +34,18 @@ user_df = user_df.drop(column_name4, axis=1)
 
 column_name5 = 'Dropped'
 user_df = user_df.drop(column_name5, axis=1)
+
+column_name6 = 'On Hold'
+user_df = user_df.drop(column_name6, axis=1)
+
+column_name7 = 'Rewatched'
+user_df = user_df.drop(column_name7, axis=1)
+
+column_name8 = 'Plan to Watch'
+user_df = user_df.drop(column_name8, axis=1)
+
+column_name8 = 'Watching'
+user_df = user_df.drop(column_name8, axis=1)
 
 location = 'Location'
 user_df = user_df[user_df[location].map(lambda x: x.isascii())]
@@ -87,6 +102,9 @@ print(user_df['Location'].head(20))
 
 column_names = user_df.columns
 print(column_names)
+
+#maov = MANOVA.from_formula('Days_Watched + Completed + Total_Entries + Episodes_Watched ~ Group', data=user_df)
+#print(maov.mv_test())
 
 output = r'archive\cleaned_userdata.csv'
 
