@@ -5,10 +5,7 @@ Created on Wed Nov 22 13:11:03 2023
 @author: yuyue
 """
 
-# 
-
-
-
+#
 import numpy as np
 import pandas as pd
 
@@ -23,7 +20,7 @@ df1 = df1.dropna()
 
 # Specify columns to drop
 columns_to_drop = ['Image URL', 'Status', 'Other name', 'Aired', 'anime_id', 'Name',
-                   'Source', 'Duration', 'Rating', 'Synopsis', 'Episodes', 'Licensors']
+                   'Source', 'Duration', 'Rating', 'Synopsis', 'Episodes', 'Licensors', 'Premiered']
 
 # Drop specified columns
 df1 = df1.drop(columns=columns_to_drop, axis=1)
@@ -39,8 +36,6 @@ df1 = df1.dropna()
 non_numerical_columns = df1.select_dtypes(exclude=[np.number]).columns
 df1[non_numerical_columns] = df1[non_numerical_columns].replace('UNKNOWN', np.nan)
 
-# Drop rows with NaN values
-df1 = df1.dropna()
 
 # Convert 'Rank', 'Score', and 'Scored By' columns to numeric, handling errors by coercing to NaN
 df1['Rank'] = pd.to_numeric(df1['Rank'], errors='coerce')
@@ -56,21 +51,7 @@ df1['Weighted_Score'] = np.interp(df1['Weighted_Score'], (df1['Weighted_Score'].
 # Reset index
 df1 = df1.reset_index(drop=True)
 
-# Function to extract the season and year from the premiered string
-def extract_season_year(premiered):
-    if premiered == 'UNKNOWN':
-        return None, None
-    else:
-        season, year = premiered.split()
-        return season, int(year)
-
-# Apply the function to extract the season and year from the "Premiered" column
-season_year = df1['Premiered'].map(extract_season_year)
-df1['Premiered Season'] = season_year.apply(lambda x: x[0])
-df1['Premiered Year'] = season_year.apply(lambda x: x[1])
-
-# Drop the original 'Premiered' column
-df1.drop('Premiered', axis=1, inplace=True)
+df1 = df1.dropna()
 
 # Save the cleaned dataset to a new CSV file
 output_path = r'cleaned_dataset2023.csv'
