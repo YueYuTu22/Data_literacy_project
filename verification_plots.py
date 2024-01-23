@@ -1,123 +1,48 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jan  9 23:54:59 2024
+Created on Tue Jan 23 09:30:16 2024
 
-@author: madhavi
+@author: madha
 """
-
 import pandas as pd
 import matplotlib.pyplot as plt
-
-file_path = r'cleaned_dataset2023.csv'
-
-df = pd.read_csv(file_path)
-
-studio_counts = df['Studios'].value_counts()
-
-# Function to extract the season and year from the premiered string
-def extract_season_year(premiered):
-    if premiered == 'UNKNOWN':
-        return None, None
-    else:
-        season, year = premiered.split()
-        return season, int(year)
-
-# Apply the function to extract the season and year from the "Premiered" column
-season_year = df['Premiered'].map(extract_season_year)
-df['Premiered Season'] = season_year.apply(lambda x: x[0])
-df['Premiered Year'] = season_year.apply(lambda x: x[1])
-
-# Drop the original 'Premiered' column
-df.drop('Premiered', axis=1, inplace=True)
-
-# Filter out anime titles with popularity value 0
-df_valid_popularity = df[df['Popularity'] > 0]
-
-selected_studio = 'Madhouse'  # Replace with the desired studio name
-studio_data = df[df['Studios'] == selected_studio]
-
-release_pattern = studio_data.groupby('Premiered Year')['English name'].count()
-
-plt.figure(figsize=(10, 6))
-plt.plot(release_pattern.index, release_pattern.values, marker='o', linestyle='-', color='b')
-plt.title(f'Release Pattern of Animes for {selected_studio}')
-plt.xlabel('Year')
-plt.ylabel('Number of Animes Released')
-plt.grid(True)
-plt.show()
-
-top_20_popular = df_valid_popularity.sort_values(by='Popularity', ascending=True).head(20)
-
-from tabulate import tabulate
-
-# Select specific rows and columns
-selected_columns = ['English name','Producers', 'Studios', 'Premiered Year','Premiered Season', 'Popularity', 'Weighted_Score']
-
-# Print the DataFrame as a table using tabulate
-table_str = tabulate(top_20_popular[selected_columns], headers='keys', tablefmt='pretty')
-
-# Print the table
-print(table_str)
-
-# Get the top 20 studios
-top_studios = top_20_popular['Studios'].value_counts().index[:20]
-
-# Plot the release pattern for each studio
-plt.figure(figsize=(12, 8))
-
-for selected_studio in top_studios:
-    studio_data = df[df['Studios'] == selected_studio]
-    release_pattern = studio_data.groupby('Premiered Year')['English name'].count()
-    
-    plt.plot(release_pattern.index, release_pattern.values, label=selected_studio, linestyle='-')
-
-plt.title('Release Pattern of Top 20 Animes by Studios')
-plt.xlabel('Year')
-plt.ylabel('Number of Animes Released')
-plt.legend()
-plt.grid(True)
-plt.show()
-
 import seaborn as sns
+from sklearn.preprocessing import MultiLabelBinarizer
 
-# Get the top 20 studios
+# Planned plots:
+#   World map: Gender distribution
+#   Top 20 anime vs Studios
+#   Heat map: Season vs Studios
+#   Genre vs Studios
+#   Type vs Studios
+
+# World map: Done by Ruitong
+
+# Data Cleaning to get Top 20 anime and their studios:
+file_path = r'cleaned_dataset2023_unknown.csv'
+df = pd.read_csv(file_path)
+df_valid_popularity = df[df['Popularity'] > 0]
+top_20_popular = df_valid_popularity.sort_values(by='Popularity', ascending=True).head(20)
 top_studios = top_20_popular['Studios'].value_counts().index[:20]
+# Filter the DataFrame to include only the top studios (for top 20)
+top_studios_df = top_20_popular[top_20_popular['Studios'].isin(top_studios)]
+# Filter df to include only rows from top studios (for all anime)
+top_studios_all = df[df['Studios'].isin(top_studios)]
 
-# Filter df to include only rows from top studios
-df_top_studios = df[df['Studios'].isin(top_studios)]
 
-# Create a pivot table for the heatmap
-heatmap_data = pd.pivot_table(df_top_studios, values='English name', index='Studios', columns='Premiered Year', aggfunc='count', fill_value=0)
-
-# Plot the heatmap
-plt.figure(figsize=(15, 10))
-sns.heatmap(heatmap_data, cmap='viridis', annot=True, fmt='g', linewidths=.5, cbar_kws={'label': 'Number of Animes Released'})
-
-plt.title('Release Pattern of Top Studios (from df)')
-plt.xlabel('Year')
-plt.ylabel('Studio')
-plt.show()
-
-# Create a pivot table for the heatmap
-heatmap_data = pd.crosstab(df_top_studios['Studios'], df_top_studios['Premiered Season'])
-
-# Normalize the data to show percentages
-heatmap_data_percent = heatmap_data.div(heatmap_data.sum(axis=1), axis=0) * 100
-
-# Plot the heatmap
+# Top 20 anime vs studio
 plt.figure(figsize=(12, 8))
-sns.heatmap(heatmap_data_percent, cmap='viridis', annot=True, fmt='.2f', linewidths=.5)
-plt.title('Season of Release for Top 20 Studios')
-plt.xlabel('Season')
-plt.ylabel('Studio')
+sns.countplot(y='Studios', data=top_studios_df, order=top_studios_df['Studios'].value_counts().index, palette='viridis')
+plt.xlabel('Number of Anime present in top 20')
+plt.ylabel('Studios')
+plt.title('Studios that Released the Top 20 Animes')
 plt.show()
-
 
 # Calculate the total number of releases for each studio
-release_counts = df_top_studios['Studios'].value_counts()
+release_counts = top_studios_all['Studios'].value_counts()
 
 # Calculate the mean popularity score for each studio
-popularity_means = df_top_studios.groupby('Studios')['Weighted_Score'].mean()
+popularity_means = top_studios_all.groupby('Studios')['Weighted_Score'].mean()
 
 # Create a DataFrame with release counts and popularity means
 correlation_data = pd.DataFrame({'Release_Count': release_counts, 'Weighted_Score_Mean': popularity_means})
@@ -131,4 +56,67 @@ plt.xlabel('Number of Releases')
 plt.ylabel('Mean Weighted Score')
 plt.legend(title='Studio', bbox_to_anchor=(1, 1))
 plt.show()
+
+
+# Studios vs season
+# Create a pivot table for the heatmap
+heatmap_data = pd.crosstab(top_studios_all['Studios'], top_studios_all['Season'])
+
+# Normalize the data to show percentages
+heatmap_data_percent = heatmap_data.div(heatmap_data.sum(axis=1), axis=0) * 100
+
+# Plot the heatmap
+plt.figure(figsize=(12, 8))
+sns.heatmap(heatmap_data_percent, cmap='viridis')
+plt.title('Season of Airing for Top Studios')
+plt.xlabel('Season')
+plt.ylabel('Studio')
+plt.show()
+
+
+# Studios vs Genres
+# Combine the two DataFrames to include all relevant rows
+df_genres_studios = pd.concat([top_studios_df, top_studios_all])
+# Reset the index to ensure it is unique
+df_genres_studios = df_genres_studios.reset_index(drop=True)
+# Filter the DataFrame to include only the rows with non-UNKNOWN genres
+df_genres_studios = df_genres_studios[df_genres_studios['Genres'] != 'UNKNOWN']
+# Preprocess the 'Genres' column for multi-label classification
+genres_list = df_genres_studios['Genres'].apply(lambda x: x.split(', '))
+mlb = MultiLabelBinarizer()
+y_genres = mlb.fit_transform(genres_list)
+# Add the 'Genres' information to the DataFrame
+df_genres_studios = pd.concat([df_genres_studios, pd.DataFrame(y_genres, columns=mlb.classes_)], axis=1)
+# Group by studios and sum the counts of each genre
+grouped_df = df_genres_studios.groupby('Studios')[mlb.classes_].sum()
+# Plotting a stacked bar plot
+plt.figure(figsize=(15, 8))
+grouped_df.plot(kind='bar', stacked=True, colormap='viridis')
+plt.xlabel('Studios')
+plt.ylabel('Count')
+plt.title('Genres vs Top Studios')
+plt.legend(title='Genres', bbox_to_anchor=(1.05, 1), loc='upper left')  # Move legend outside the plot
+plt.xticks(rotation=45, ha='right')  # Rotate x-axis labels for better visibility
+plt.show()
+
+
+# Type vs Studios 
+# Filter the DataFrame to include only the rows with top studios
+df_studios_types = df_valid_popularity[df_valid_popularity['Studios'].isin(top_studios)]
+# Create a DataFrame with the count of each type for each studio
+df_types_studios = pd.crosstab(df_studios_types['Studios'], df_studios_types['Type'])
+# Plotting a grouped bar plot
+plt.figure(figsize=(12, 8))
+df_types_studios.plot(kind='bar', stacked=True, colormap='viridis')
+plt.xlabel('Studios')
+plt.ylabel('Count')
+plt.title('Anime Types vs Top Studios')
+plt.legend(title='Type', bbox_to_anchor=(1.05, 1), loc='upper left')  # Move legend outside the plot
+plt.xticks(rotation=45, ha='right')  # Rotate x-axis labels for better visibility
+plt.show()
+
+
+
+
+
 
