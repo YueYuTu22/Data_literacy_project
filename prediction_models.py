@@ -38,9 +38,9 @@ df_season['Season'] = label_encoder_season.fit_transform(df_season['Season'])
 df_type['Type'] = label_encoder_type.fit_transform(df_type['Type'])
 
 # Define features (X) and target variables (y)
-X_season = df_season[['Popularity', 'Weighted_Score', 'Members', 'Favorites',]]
-X_type = df_type[['Popularity', 'Weighted_Score', 'Members',  'Favorites',]]
-X = df[['Popularity', 'Favorites', 'Weighted_Score', 'Members']]
+X_season = df_season[['Weighted_Score', 'Members', 'Favorites',]]
+X_type = df_type[['Weighted_Score', 'Members',  'Favorites',]]
+X = df[['Favorites', 'Weighted_Score', 'Members']]
 y_season = df_season['Season']
 y_type = df_type['Type']
 
