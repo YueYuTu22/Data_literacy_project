@@ -89,9 +89,10 @@ y_genres = mlb.fit_transform(genres_list)
 df_genres_studios = pd.concat([df_genres_studios, pd.DataFrame(y_genres, columns=mlb.classes_)], axis=1)
 # Group by studios and sum the counts of each genre
 grouped_df = df_genres_studios.groupby('Studios')[mlb.classes_].sum()
+grouped_df_percentage = grouped_df.div(grouped_df.sum(axis=1), axis=0) * 100
 # Plotting a stacked bar plot
 plt.figure(figsize=(15, 8))
-grouped_df.plot(kind='bar', stacked=True, colormap='viridis')
+grouped_df_percentage.plot(kind='bar', stacked=True, colormap='viridis')
 plt.xlabel('Studios')
 plt.ylabel('Count')
 plt.title('Genres vs Top Studios')
@@ -107,7 +108,8 @@ df_studios_types = df_valid_popularity[df_valid_popularity['Studios'].isin(top_s
 df_types_studios = pd.crosstab(df_studios_types['Studios'], df_studios_types['Type'])
 # Plotting a grouped bar plot
 plt.figure(figsize=(12, 8))
-df_types_studios.plot(kind='bar', stacked=True, colormap='viridis')
+df_types_studios_percentage = df_types_studios.div(df_types_studios.sum(axis=1), axis=0) * 100
+df_types_studios_percentage.plot(kind='bar', stacked=True, colormap='viridis')
 plt.xlabel('Studios')
 plt.ylabel('Count')
 plt.title('Anime Types vs Top Studios')
