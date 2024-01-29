@@ -26,7 +26,7 @@ Using data from Popularity, Favourites and other such features, we plan to use a
   
 for studios to suggest the features that are best for the desired rank/popularity.
 
-Find the predictive model in [here](/DataProcess/prediction_models.py)
+Find the predictive model in [here](/DataProcess/prediction_models.py).
 
 ### Verification of results through plots
 
