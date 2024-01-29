@@ -17,7 +17,7 @@ Refer to the following table which shows which python script generates which cle
 
 All files required for the models and plots are present in the [**DataProcess** folder](/DataProcess).
 
-### Predictive model for Studios
+### Predictive model for Features
 
 Using data from Popularity, Favourites and other such features, we plan to use a conditional probability table (conditioned on rank or popularity) to help predict features such as
 * Genre
