@@ -1,5 +1,9 @@
 # Unraveling User Behavior and Industry Strategies in the Anime Industry
 
+## Data cleaning
+
+All files reuired for data cleaning are present in the **DaatClean** folder. Refer to the 
+
 ## Plan
 
 The project is planned to have two main sections:
