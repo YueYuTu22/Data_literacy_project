@@ -2,17 +2,20 @@
 
 ## Data cleaning
 
-All files required for data cleaning are present in the **DataClean** folder. 
+All files required for data cleaning are present in the [**DataClean** folder](/DataClean). 
+Refer to the following table which shows which python script generates which cleaned dataset.
 
 | Cleaned datasets      | Python Script |
 | ----------- | ----------- |
-| cleaned_dataset2023.csv       | dataset2023_Cleaning_A.py       |
-| cleaned_dataset2023_unknown.csv    | dataset2023_Cleaning_B.py      |
+| cleaned_dataset2023.csv       | [dataset2023_Cleaning_A.py](/DataClean/dataset2023_Cleaning_A.py)     |
+| cleaned_dataset2023_unknown.csv    | [dataset2023_Cleaning_B.py](/DataClean/dataset2023_Cleaning_B.py)       |
 
+- cleaned_dataset2023.csv: All NaN values removed from all numeric and non-numeric columns.
+- cleaned_dataset2023_unknown.csv: NaN values removed only for columns corresponding to numeric values.
 
-## Plan
+## Research
 
-The project is planned to have two main sections:
+All files required for the models and plots are present in the [**DataProcess** folder](/DataProcess).
 
 ### Predictive model for Studios
 
@@ -23,13 +26,11 @@ Using data from Popularity, Favourites and other such features, we plan to use a
   
 for studios to suggest the features that are best for the desired rank/popularity.
 
-### Verification of results
+Find the predictive model in [here](/DataProcess/prediction_models.py)
+
+### Verification of results through plots
 
 For the top 20 most popular animes, we plan to extract the corresponding studios and check their trends to check whether these studios take user trends into account while planning releases.
 
-## Notes from meeting
+Find the code for all the verification plots [here](/DataProcess/verification_plots.py).
 
-### 10/01/2024
-
-* Bayesian approach with an uniformative prior: Conditional probability model with a something like a beta binomial prior
-* Filter the data to get the conditional densities
