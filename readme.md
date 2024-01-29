@@ -2,7 +2,13 @@
 
 ## Data cleaning
 
-All files reuired for data cleaning are present in the **DaatClean** folder. Refer to the 
+All files required for data cleaning are present in the **DataClean** folder. 
+
+| Cleaned datasets      | Python Script |
+| ----------- | ----------- |
+| cleaned_dataset2023.csv       | dataset2023_Cleaning_A.py       |
+| cleaned_dataset2023_unknown.csv    | dataset2023_Cleaning_B.py      |
+
 
 ## Plan
 
