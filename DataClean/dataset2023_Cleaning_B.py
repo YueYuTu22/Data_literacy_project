@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 # Replace 'your_file.csv' with the path to your CSV file
-file_path = r'anime-dataset-2023.csv'
+file_path = r'/archive/rawData/anime-dataset-2023.csv'
 
 # Read the CSV file into a DataFrame
 df2 = pd.read_csv(file_path)
